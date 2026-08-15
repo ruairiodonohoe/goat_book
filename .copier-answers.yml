@@ -1,0 +1,13 @@
+_commit: v2.0.0
+_src_path: gh:superlinear-ai/substrate
+author_email: ruairiodonohoe@gmail.com
+author_name: Ruairi O'Donohoe
+project_description: Demo book TDD
+project_name: goat_book
+project_type: app
+project_url: https://github.com/ruairiodonohoe/goat_book
+python_version: '3.14'
+typing: strict
+with_conventional_commits: false
+with_fastapi_api: false
+with_typer_cli: false

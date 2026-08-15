@@ -1,0 +1,26 @@
+site_name: goat_book
+site_description: Demo book TDD
+site_url: https://ruairiodonohoe.github.io/goat_book
+repo_url: https://github.com/ruairiodonohoe/goat_book
+repo_name: ruairiodonohoe/goat_book
+
+strict: true
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
