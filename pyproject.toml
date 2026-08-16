@@ -10,10 +10,10 @@ readme = "README.md"
 authors = [{ name = "Ruairi O'Donohoe", email = "ruairiodonohoe@gmail.com" }]
 requires-python = ">=3.14,<4.0"
 dependencies = [
-    "django<6",
-    "dotenv>=0.9.9",
-    "poethepoet (>=0.32.1)",
-    "selenium>=4.47.0",
+  "django<6",
+  "dotenv>=0.9.9",
+  "poethepoet (>=0.32.1)",
+  "selenium>=4.47.0",
 ]
 
 [project.urls] # https://packaging.python.org/en/latest/specifications/well-known-project-urls/#well-known-labels
@@ -93,6 +93,7 @@ ignore = [
   "RET504",
   "S101",
   "TD003",
+  "PT",     # Temporary, PyTest
 ]
 unfixable = ["ERA001", "F401", "F841", "T201", "T203"]
 
