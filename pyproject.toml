@@ -9,7 +9,12 @@ description = "Demo book TDD"
 readme = "README.md"
 authors = [{ name = "Ruairi O'Donohoe", email = "ruairiodonohoe@gmail.com" }]
 requires-python = ">=3.14,<4.0"
-dependencies = ["django<6", "poethepoet (>=0.32.1)", "selenium>=4.47.0"]
+dependencies = [
+    "django<6",
+    "dotenv>=0.9.9",
+    "poethepoet (>=0.32.1)",
+    "selenium>=4.47.0",
+]
 
 [project.urls] # https://packaging.python.org/en/latest/specifications/well-known-project-urls/#well-known-labels
 homepage = "https://github.com/ruairiodonohoe/goat_book"
@@ -26,7 +31,8 @@ dev = [
   "ipython (>=8.18.0)",
   "ipywidgets (>=8.1.2)",
   "mkdocs-material (>=9.5.21)",
-  "pre-commit (>=4.0.1)",
+  #"pre-commit (>=4.0.1)",
+  "prek>=0.4.13",
   "pytest (>=8.3.4)",
   "pytest-mock (>=3.14.0)",
   "pytest-xdist (>=3.6.1)",
@@ -148,8 +154,13 @@ cmd = "echo 'Serving app (placeholder)...'"
 
 [tool.poe.tasks.lint]
 help = "Lint this app"
+# cmd = """
+#     pre-commit run
+#       --all-files
+#       --color always
+#     """
 cmd = """
-    pre-commit run
+    prek run
       --all-files
       --color always
     """

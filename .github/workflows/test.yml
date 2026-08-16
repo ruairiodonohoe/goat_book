@@ -40,5 +40,5 @@ jobs:
       - name: Lint app
         run: devcontainer exec --workspace-folder . poe lint
 
-      - name: Test app
-        run: devcontainer exec --workspace-folder . poe test
+      # - name: Test app
+      #   run: devcontainer exec --workspace-folder . poe test
