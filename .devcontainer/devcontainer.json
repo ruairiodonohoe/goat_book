@@ -13,7 +13,8 @@
     },
     "overrideCommand": true,
     "remoteUser": "user",
-    "postStartCommand": "sudo chown -R user:user /opt/ && uv sync --python ${localEnv:PYTHON_VERSION:3.14} --all-extras && pre-commit install --install-hooks",
+    //"postStartCommand": "sudo chown -R user:user /opt/ && uv sync --python ${localEnv:PYTHON_VERSION:3.14} --all-extras && pre-commit install --install-hooks",
+    "postStartCommand": "sudo chown -R user:user /opt/ && uv sync --python ${localEnv:PYTHON_VERSION:3.14} --all-extras && prek install --install-hooks",
     "customizations": {
         "jetbrains": {
             "backend": "PyCharm",
