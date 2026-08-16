@@ -67,3 +67,9 @@ dist/
 
 # VS Code
 .vscode/
+
+# SQLite databases
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.db
