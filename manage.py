@@ -8,10 +8,11 @@ from pathlib import Path
 
 def main() -> None:
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "superlists.settings")
+    # --- CHANGE append TO insert(0) SO PYTHON LOOKS IN src/ FIRST ---
+    base_dir = Path(__file__).resolve().parent
+    sys.path.insert(0, str(base_dir / "src"))
 
-    # --- ADD THIS LINE SO DJANGO CAN FIND EVERYTHING INSIDE src/ ---
-    sys.path.append(str(Path(__file__).resolve().parent / "src"))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "superlists.settings")
 
     try:
         from django.core.management import execute_from_command_line
