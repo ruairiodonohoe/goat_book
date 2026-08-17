@@ -41,6 +41,9 @@ dev = [
   "typeguard (>=4.4.1)",
 ]
 
+[tool.uv]
+package = false
+
 [tool.codespell] # https://github.com/codespell-project/codespell
 builtin = "en-GB_to_en-US,clear,code,rare"
 check-filenames = true
