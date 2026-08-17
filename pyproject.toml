@@ -10,9 +10,9 @@ readme = "README.md"
 authors = [{ name = "Ruairi O'Donohoe", email = "ruairiodonohoe@gmail.com" }]
 requires-python = ">=3.14,<4.0"
 dependencies = [
-  "django<6",
+  "django<7",
   "dotenv>=0.9.9",
-  "poethepoet (>=0.32.1)",
+  "poethepoet (>=0.48.0)",
   "selenium>=4.47.0",
 ]
 
