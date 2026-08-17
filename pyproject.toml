@@ -13,6 +13,8 @@ dependencies = [
   "django<7",
   "dotenv>=0.9.9",
   "poethepoet (>=0.48.0)",
+  "pytest>=9.1.1",
+  "pytest-django>=4.14.0",
   "selenium>=4.47.0",
 ]
 
@@ -71,6 +73,9 @@ addopts = "--color=yes --doctest-modules --exitfirst --failed-first --strict-con
 filterwarnings = ["error", "ignore::DeprecationWarning"]
 testpaths = ["src", "tests"]
 xfail_strict = true
+DJANGO_SETTINGS_MODULE = "superlists.settings"
+pythonpath = ["src"]
+python_files = ["test_*.py", "*_test.py", "tests.py"]
 
 [tool.ruff] # https://docs.astral.sh/ruff/settings/
 fix = true
