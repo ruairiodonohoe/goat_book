@@ -29,6 +29,7 @@ issues = "https://github.com/ruairiodonohoe/goat_book/issues"
 dev = [
   "codespell (>=2.4.3)",
   "coverage[toml] (>=7.15.4)",
+  "django-stubs>=6.1.0",
   "ipykernel (>=7.3.0)",
   "ipython (>=9.16.1)",
   "ipywidgets (>=8.1.8)",
@@ -126,6 +127,14 @@ convention = "numpy"
   "PLC0415", # import outside toplevel
   "TRY003",  # avoid-specify-long-message-in-exception
   "EM101",   # Exception must not use a string literal, assign to variable first
+]
+"**/migrations/*.py" = [
+  "D100",   # Missing docstring in public module
+  "D101",   # Missing docstring in public class
+  "D102",   # Missing docstring in public method
+  "D103",   # Missing docstring in public function
+  "D104",   # Missing docstring in public package
+  "RUF012", # Mutable default value for class attribute
 ]
 
 [tool.ty.rules]
