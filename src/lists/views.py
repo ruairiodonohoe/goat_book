@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from django.http import HttpResponse
 from django.shortcuts import render
 
 if TYPE_CHECKING:
@@ -13,4 +14,4 @@ if TYPE_CHECKING:
 
 def home_page(request: HttpRequest) -> HttpResponse:
     """Home page view."""
-    return render(request, "home.html")
+    return render(request, "home.html", {"new_item_text": request.POST.get("item_text", "")})
