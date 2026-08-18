@@ -19,11 +19,42 @@ class HomePageTest(TestCase):
         self.assertContains(response, '<form method="post">')
         self.assertContains(response, '<input name="item_text"')
 
+    def test_displays_all_list_items(self) -> None:
+        """Test display all list items on a get request."""
+        Item.objects.create(text="itemy 1")
+        Item.objects.create(text="itemy 2")
+
+        response = self.client.get("/")
+
+        self.assertContains(response, "itemy 1")
+        self.assertContains(response, "itemy 2")
+
     def test_can_save_a_post_request(self) -> None:
         """Test saving POST request."""
+        self.client.post("/", data={"item_text": "A new list item"})
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        assert new_item is not None
+        self.assertEqual(new_item.text, "A new list item")
+
+    def test_redirects_after_post(self) -> None:
+        """Test redirect after POST request."""
         response = self.client.post("/", data={"item_text": "A new list item"})
-        self.assertContains(response, "A new list item")
-        self.assertTemplateUsed(response, "home.html")
+        self.assertRedirects(response, "/")
+
+    def test_only_saves_items_when_necessary(self) -> None:
+        """Test that Item does not save blank item."""
+        self.client.get("/")
+        self.assertEqual(Item.objects.count(), 0)
+
+    '''
+    def test_can_save_multiple_items(self) -> None:
+        """Test saving multiple Items."""
+        self.client.post("/", data={"item_text": "first item"})
+        response = self.client.post("/", data={"item_text": "second item"})
+        self.assertContains(response, "first item")
+        self.assertContains(response, "second item")
+    '''
 
 
 class ItemModelTest(TestCase):
