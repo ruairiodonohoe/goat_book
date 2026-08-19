@@ -40,7 +40,7 @@ class HomePageTest(TestCase):
     def test_redirects_after_post(self) -> None:
         """Test redirect after POST request."""
         response = self.client.post("/", data={"item_text": "A new list item"})
-        self.assertRedirects(response, "/")
+        self.assertRedirects(response, "/lists/the-only-list-in-the-world/")
 
     def test_only_saves_items_when_necessary(self) -> None:
         """Test that Item does not save blank item."""
