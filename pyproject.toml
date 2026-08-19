@@ -76,7 +76,7 @@ filterwarnings = [
   "ignore::DeprecationWarning",
   "ignore:Implicitly cleaning up.*:ResourceWarning",
 ]
-testpaths = ["src", "tests"]
+testpaths = ["src", "functional_tests"]
 xfail_strict = true
 DJANGO_SETTINGS_MODULE = "superlists.settings"
 pythonpath = ["src"]
