@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
-from lists.models import Item
+from lists.models import Item, List
 
 if TYPE_CHECKING:
     from django.http import HttpRequest, HttpResponse
@@ -27,5 +27,6 @@ def view_list(request: HttpRequest) -> HttpResponse:
 
 def new_list(request: HttpRequest) -> HttpResponse:
     """Create new list view."""
-    Item.objects.create(text=request.POST["item_text"])
+    nulist = List.objects.create()
+    Item.objects.create(text=request.POST["item_text"], list=nulist)
     return redirect("/lists/the-only-list-in-the-world/")
