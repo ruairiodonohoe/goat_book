@@ -16,26 +16,8 @@ class HomePageTest(TestCase):
     def test_renders_input_form(self) -> None:
         """Test rendered input form of home page."""
         response = self.client.get("/")
-        self.assertContains(response, '<form method="post" action="/">')
+        self.assertContains(response, '<form method="post" action="/lists/new">')
         self.assertContains(response, '<input name="item_text"')
-
-    def test_can_save_a_post_request(self) -> None:
-        """Test saving POST request."""
-        self.client.post("/", data={"item_text": "A new list item"})
-        self.assertEqual(Item.objects.count(), 1)
-        new_item = Item.objects.first()
-        assert new_item is not None
-        self.assertEqual(new_item.text, "A new list item")
-
-    def test_redirects_after_post(self) -> None:
-        """Test redirect after POST request."""
-        response = self.client.post("/", data={"item_text": "A new list item"})
-        self.assertRedirects(response, "/lists/the-only-list-in-the-world/")
-
-    def test_only_saves_items_when_necessary(self) -> None:
-        """Test that Item does not save blank item."""
-        self.client.get("/")
-        self.assertEqual(Item.objects.count(), 0)
 
     '''
     def test_can_save_multiple_items(self) -> None:
@@ -69,6 +51,23 @@ class ItemModelTest(TestCase):
         self.assertEqual(second_saved_item.text, "Item the second")
 
 
+class NewListTest(TestCase):
+    """Test creating a new list."""
+
+    def test_can_save_a_post_request(self) -> None:
+        """Test saving POST request."""
+        self.client.post("/lists/new", data={"item_text": "A new list item"})
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        assert new_item is not None
+        self.assertEqual(new_item.text, "A new list item")
+
+    def test_redirects_after_post(self) -> None:
+        """Test redirect after POST request."""
+        response = self.client.post("/lists/new", data={"item_text": "A new list item"})
+        self.assertRedirects(response, "/lists/the-only-list-in-the-world/")
+
+
 class ListViewTest(TestCase):
     """Test LIst View."""
 
@@ -80,7 +79,7 @@ class ListViewTest(TestCase):
     def test_renders_input_form(self) -> None:
         """Test rendered input form of home page."""
         response = self.client.get("/lists/the-only-list-in-the-world/")
-        self.assertContains(response, '<form method="post" action="/">')
+        self.assertContains(response, '<form method="post" action="/lists/new">')
         self.assertContains(response, '<input name="item_text"')
 
     def test_displays_all_list_items(self) -> None:
