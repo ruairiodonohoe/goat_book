@@ -75,30 +75,67 @@ class NewListTest(TestCase):
     def test_redirects_after_post(self) -> None:
         """Test redirect after POST request."""
         response = self.client.post("/lists/new", data={"item_text": "A new list item"})
-        self.assertRedirects(response, "/lists/the-only-list-in-the-world/")
+        new_list = List.objects.get()
+        self.assertRedirects(response, f"/lists/{new_list.id}/")
+
+
+class NewItemTest(TestCase):
+    """Test adding new item."""
+
+    def test_can_save_a_post_request_to_an_existing_list(self) -> None:
+        """Test post request to existing list."""
+        other_list = List.objects.create()  # noqa: F841
+        correct_list = List.objects.create()
+
+        self.client.post(
+            f"/lists/{correct_list.id}/add_item",
+            data={"item_text": "A new item for an existing list"},
+        )
+
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.get()
+        self.assertEqual(new_item.text, "A new item for an existing list")
+        self.assertEqual(new_item.list, correct_list)
+
+    def test_redirects_to_list_view(self) -> None:
+        """Test redirect to list view."""
+        other_list = List.objects.create()  # noqa: F841
+        correct_list = List.objects.create()
+
+        response = self.client.post(
+            f"/lists/{correct_list.id}/add_item",
+            data={"item_text": "A new item for an existing list"},
+        )
+
+        self.assertRedirects(response, f"/lists/{correct_list.id}/")
 
 
 class ListViewTest(TestCase):
-    """Test LIst View."""
+    """Test List View."""
 
     def tests_uses_list_template(self) -> None:
         """Test that the correct template is used."""
-        response = self.client.get("/lists/the-only-list-in-the-world/")
+        mylist = List.objects.create()
+        response = self.client.get(f"/lists/{mylist.id}/")
         self.assertTemplateUsed(response, "list.html")
 
     def test_renders_input_form(self) -> None:
         """Test rendered input form of home page."""
-        response = self.client.get("/lists/the-only-list-in-the-world/")
-        self.assertContains(response, '<form method="post" action="/lists/new">')
+        mylist = List.objects.create()
+        response = self.client.get(f"/lists/{mylist.id}/")
+        self.assertContains(response, f'<form method="post" action="/lists/{mylist.id}/add_item">')
         self.assertContains(response, '<input name="item_text"')
 
-    def test_displays_all_list_items(self) -> None:
+    def test_displays_only_items_for_that_list(self) -> None:
         """Test display all list items on a get request."""
-        mylist = List.objects.create()
-        Item.objects.create(text="itemy 1", list=mylist)
-        Item.objects.create(text="itemy 2", list=mylist)
+        correct_list = List.objects.create()
+        Item.objects.create(text="itemy 1", list=correct_list)
+        Item.objects.create(text="itemy 2", list=correct_list)
+        other_list = List.objects.create()
+        Item.objects.create(text="other list item", list=other_list)
 
-        response = self.client.get("/lists/the-only-list-in-the-world/")
+        response = self.client.get(f"/lists/{correct_list.id}/")
 
         self.assertContains(response, "itemy 1")
         self.assertContains(response, "itemy 2")
+        self.assertNotContains(response, "other list item")
