@@ -16,18 +16,8 @@ class HomePageTest(TestCase):
     def test_renders_input_form(self) -> None:
         """Test rendered input form of home page."""
         response = self.client.get("/")
-        self.assertContains(response, '<form method="post">')
+        self.assertContains(response, '<form method="post" action="/">')
         self.assertContains(response, '<input name="item_text"')
-
-    def test_displays_all_list_items(self) -> None:
-        """Test display all list items on a get request."""
-        Item.objects.create(text="itemy 1")
-        Item.objects.create(text="itemy 2")
-
-        response = self.client.get("/")
-
-        self.assertContains(response, "itemy 1")
-        self.assertContains(response, "itemy 2")
 
     def test_can_save_a_post_request(self) -> None:
         """Test saving POST request."""
@@ -77,3 +67,28 @@ class ItemModelTest(TestCase):
         second_saved_item = saved_items[1]
         self.assertEqual(first_saved_item.text, "The first (ever) list item")
         self.assertEqual(second_saved_item.text, "Item the second")
+
+
+class ListViewTest(TestCase):
+    """Test LIst View."""
+
+    def tests_uses_list_template(self) -> None:
+        """Test that the correct template is used."""
+        response = self.client.get("/lists/the-only-list-in-the-world/")
+        self.assertTemplateUsed(response, "list.html")
+
+    def test_renders_input_form(self) -> None:
+        """Test rendered input form of home page."""
+        response = self.client.get("/lists/the-only-list-in-the-world/")
+        self.assertContains(response, '<form method="post" action="/">')
+        self.assertContains(response, '<input name="item_text"')
+
+    def test_displays_all_list_items(self) -> None:
+        """Test display all list items on a get request."""
+        Item.objects.create(text="itemy 1")
+        Item.objects.create(text="itemy 2")
+
+        response = self.client.get("/lists/the-only-list-in-the-world/")
+
+        self.assertContains(response, "itemy 1")
+        self.assertContains(response, "itemy 2")
