@@ -8,6 +8,8 @@ from django.db import models
 class List(models.Model):
     """List model."""
 
+    id: models.AutoField[int, int]
+
     def __str__(self) -> str:
         """Return string representation of the List."""
         return ""

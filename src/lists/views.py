@@ -19,14 +19,21 @@ def home_page(request: HttpRequest) -> HttpResponse:
     return render(request, "home.html")
 
 
-def view_list(request: HttpRequest) -> HttpResponse:
+def view_list(request: HttpRequest, list_id: int) -> HttpResponse:
     """List view."""
-    items = Item.objects.all()
-    return render(request, "list.html", {"items": items})
+    our_list = List.objects.get(id=list_id)
+    return render(request, "list.html", {"list": our_list})
 
 
 def new_list(request: HttpRequest) -> HttpResponse:
     """Create new list view."""
     nulist = List.objects.create()
     Item.objects.create(text=request.POST["item_text"], list=nulist)
-    return redirect("/lists/the-only-list-in-the-world/")
+    return redirect(f"/lists/{nulist.id}/")
+
+
+def add_item(request: HttpRequest, list_id: int) -> HttpResponse:
+    """Add new item to existing list."""
+    our_list = List.objects.get(id=list_id)
+    Item.objects.create(text=request.POST["item_text"], list=our_list)
+    return redirect(f"/lists/{our_list.id}/")
