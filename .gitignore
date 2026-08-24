@@ -73,3 +73,6 @@ dist/
 *.sqlite3-journal
 *.sqlite3-wal
 *.db
+
+# Bootstrap
+src/lists/static/bootstrap/css/*.map
