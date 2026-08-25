@@ -76,3 +76,6 @@ dist/
 
 # Bootstrap
 src/lists/static/bootstrap/css/*.map
+
+# Static files
+/static
