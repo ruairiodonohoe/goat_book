@@ -1,5 +1,6 @@
 """Test Django homepage."""
 
+import os
 import time
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -13,6 +14,13 @@ MAX_WAIT = 5
 
 class NewVisitorTest(StaticLiveServerTestCase):
     """New Visitor Test."""
+
+    @property
+    def live_server_url(self) -> str:
+        """Return TEST_SERVER env var if set, otherwise fallback to Django's live server."""
+        if test_server := os.environ.get("TEST_SERVER"):
+            return "http://" + test_server
+        return super().live_server_url
 
     def setUp(self) -> None:
         """Set up test."""
