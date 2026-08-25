@@ -12,6 +12,7 @@ requires-python = ">=3.14,<4.0"
 dependencies = [
   "django<7",
   "dotenv>=0.9.9",
+  "lxml[cssselect]>=6.1.2",
   "poethepoet (>=0.48.0)",
   "pytest>=9.1.1",
   "pytest-django>=4.14.0",
@@ -50,7 +51,7 @@ package = false
 [tool.codespell] # https://github.com/codespell-project/codespell
 builtin = "en-GB_to_en-US,clear,code,rare"
 check-filenames = true
-skip = "./*_cache/,./.venv,./reports"
+skip = "./*_cache/,./.venv,./reports,./src/lists/static/bootstrap/*,./static/bootstrap/*"
 ignore-words-list = "assertIn"
 
 [tool.coverage.report] # https://coverage.readthedocs.io/en/latest/config.html#report
