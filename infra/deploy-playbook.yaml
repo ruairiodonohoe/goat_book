@@ -20,7 +20,7 @@
 
     - name: Build container image locally
       community.docker.docker_image:
-        name: superlist
+        name: superlists
         source: build
         state: present
         build:
@@ -31,28 +31,28 @@
 
     - name: Export container image locally
       community.docker.docker_image:
-        name: superlist
-        archive_path: /tmp/superlist-img.tar
+        name: superlists
+        archive_path: /tmp/superlists-img.tar
         source: local
       delegate_to: 127.0.0.1
 
     - name: Upload image to server
       ansible.builtin.copy:
-        src: /tmp/superlist-img.tar
-        dest: /tmp/superlist-img.tar
+        src: /tmp/superlists-img.tar
+        dest: /tmp/superlists-img.tar
       
     - name: Import container image on server
       community.docker.docker_image:
-        name: superlist
-        load_path: /tmp/superlist-img.tar
+        name: superlists
+        load_path: /tmp/superlists-img.tar
         source: load
         force_source: true
         state: present
 
     - name: Run test container
       community.docker.docker_container:
-        name: superlist
-        image: superlist
+        name: superlists
+        image: superlists
         state: started
         recreate: true
       become: true
