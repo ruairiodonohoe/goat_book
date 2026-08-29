@@ -1,49 +1,13 @@
-"""Test Django homepage."""
+"""Test Django NewVisitor list creation."""
 
-import os
-import time
-
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-MAX_WAIT = 5
+from functional_tests.base import FunctionalTest
 
 
-class NewVisitorTest(StaticLiveServerTestCase):
+class NewVisitorTest(FunctionalTest):
     """New Visitor Test."""
-
-    @property
-    def live_server_url(self) -> str:
-        """Return TEST_SERVER env var if set, otherwise fallback to Django's live server."""
-        if test_server := os.environ.get("TEST_SERVER"):
-            return "http://" + test_server
-        return super().live_server_url
-
-    def setUp(self) -> None:
-        """Set up test."""
-        self.browser = webdriver.Firefox()
-
-    def tearDown(self) -> None:
-        """Test down test."""
-        self.browser.quit()
-
-    def wait_for_row_in_list_table(self, row_text: str) -> None:
-        """Check for row in list table."""
-        start_time = time.time()
-        while True:
-            try:
-                table = self.browser.find_element(By.ID, "id_list_table")
-                rows = table.find_elements(By.TAG_NAME, "tr")
-                self.assertIn(row_text, [row.text for row in rows])
-            except AssertionError, WebDriverException:
-                if time.time() - start_time > MAX_WAIT:
-                    raise
-                time.sleep(0.5)
-            else:
-                return
 
     def test_can_start_a_todo_list(self) -> None:
         """Main test. Can user start ToDo List."""
@@ -123,21 +87,3 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertIn("Buy milk", page_text)
 
         # Satisfied, they both go back to sleep
-
-    def test_layout_and_styling(self) -> None:
-        """Test CSS."""
-        # Edith goes to the home page
-        self.browser.get(self.live_server_url)
-
-        # Her browser window is sup to a very specific size
-        self.browser.set_window_size(1024, 768)
-
-        # She notices the input box is nicely centered
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
-        self.assertAlmostEqual(inputbox.location["x"] + inputbox.size["width"] / 2, 512, delta=40)
-
-        inputbox.send_keys("testing")
-        inputbox.send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table("1: testing")
-        inputbox = self.browser.find_element(By.ID, "id_new_item")
-        self.assertAlmostEqual(inputbox.location["x"] + inputbox.size["width"] / 2, 512, delta=40)
