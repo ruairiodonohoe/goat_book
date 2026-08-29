@@ -2,11 +2,15 @@
 
 import os
 import time
+from typing import TYPE_CHECKING
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 MAX_WAIT = 5
 
@@ -43,3 +47,14 @@ class FunctionalTest(StaticLiveServerTestCase):
                 time.sleep(0.5)
             else:
                 return
+
+    def wait_for(self, fn: Callable[[], object]) -> object:
+        """Wait for function to complete."""
+        start_time = time.time()
+        while True:
+            try:
+                return fn()
+            except AssertionError, WebDriverException:
+                if time.time() - start_time > MAX_WAIT:
+                    raise
+                time.sleep(0.5)
