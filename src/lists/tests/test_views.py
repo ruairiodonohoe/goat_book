@@ -20,7 +20,7 @@ class HomePageTest(TestCase):
         response = self.client.get("/")
         parsed = lxml.html.fromstring(response.content)
         [form] = parsed.cssselect("form[method=post]")
-        self.assertEqual(form.get("action"), "/lists/new")
+        self.assertEqual(form.get("action").strip(), "/lists/new")
         text_inputs = form.cssselect("input")
         self.assertIn("item_text", [text_input.get("name") for text_input in text_inputs])
 
@@ -81,7 +81,7 @@ class ListViewTest(TestCase):
         response = self.client.get(f"/lists/{mylist.id}/")
         parsed = lxml.html.fromstring(response.content)
         [form] = parsed.cssselect("form[method=post]")
-        self.assertEqual(form.get("action"), f"/lists/{mylist.id}/")
+        self.assertEqual(form.get("action").strip(), f"/lists/{mylist.id}/")
         text_inputs = form.cssselect("input")
         self.assertIn("item_text", [text_input.get("name") for text_input in text_inputs])
 
@@ -123,3 +123,12 @@ class ListViewTest(TestCase):
         )
 
         self.assertRedirects(response, f"/lists/{correct_list.id}/")
+
+    def test_validation_errors_end_up_on_lists_page(self) -> None:
+        """Test validation errors end up on lists page."""
+        list_ = List.objects.create()
+        response = self.client.post(f"/lists/{list_.id}/", data={"item_text": ""})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "list.html")
+        expected_error = html.escape("You can't have an empty list item")
+        self.assertContains(response, expected_error)
