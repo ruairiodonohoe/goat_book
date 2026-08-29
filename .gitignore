@@ -73,9 +73,11 @@ dist/
 *.sqlite3-journal
 *.sqlite3-wal
 *.db
+container.db.sqlite3
 
 # Bootstrap
 src/lists/static/bootstrap/css/*.map
 
 # Static files
 /static
+
