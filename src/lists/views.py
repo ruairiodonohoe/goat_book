@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 def home_page(request: HttpRequest) -> HttpResponse:
     """Home page view."""
+    """return render(request, "home.html", {"form": ItemForm()})"""
     return render(request, "home.html")
 
 
