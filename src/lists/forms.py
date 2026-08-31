@@ -1,10 +1,10 @@
 """Forms."""
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from django import forms
 
-from lists.models import Item
+from lists.models import Item, List
 
 EMPTY_ITEM_ERROR = "You can't have an empty list item"
 
@@ -23,6 +23,11 @@ class ItemForm(forms.models.ModelForm):
             )
         }
         error_messages: ClassVar[dict] = {"text": {"required": EMPTY_ITEM_ERROR}}
+
+    def save(self, for_list: List, *args: Any, **kwargs: Any) -> Item:
+        """Save Item to List."""
+        self.instance.list = for_list
+        return super().save(*args, **kwargs)
 
     # item_text = forms.CharField( #noqa: ERA001
     #     widget=forms.widgets.TextInput( #noqa: ERA001
