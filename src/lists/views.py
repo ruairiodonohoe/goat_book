@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
 from lists.forms import ItemForm
-from lists.models import Item, List
+from lists.models import List
 
 if TYPE_CHECKING:
     from django.http import HttpRequest, HttpResponse
@@ -29,7 +29,7 @@ def view_list(request: HttpRequest, list_id: int) -> HttpResponse:
     if request.method == "POST":
         form = ItemForm(data=request.POST)
         if form.is_valid():
-            Item.objects.create(text=request.POST["text"], list=our_list)
+            form.save(for_list=our_list)
             return redirect(our_list)
 
     return render(request, "list.html", {"list": our_list, "form": form})
@@ -40,7 +40,7 @@ def new_list(request: HttpRequest) -> HttpResponse:
     form = ItemForm(data=request.POST)
     if form.is_valid():
         nulist = List.objects.create()
-        Item.objects.create(text=request.POST["text"], list=nulist)
+        form.save(for_list=nulist)
         return redirect(nulist)
 
     return render(request, "home.html", {"form": form})
