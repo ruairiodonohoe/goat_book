@@ -12,6 +12,8 @@ from selenium.webdriver.common.by import By
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from selenium.webdriver.remote.webelement import WebElement
+
 MAX_WAIT = 5
 
 
@@ -58,3 +60,7 @@ class FunctionalTest(StaticLiveServerTestCase):
                 if time.time() - start_time > MAX_WAIT:
                     raise
                 time.sleep(0.5)
+
+    def get_item_input_box(self) -> WebElement:
+        """Get item input box."""
+        return self.browser.find_element(By.ID, "id_text")
