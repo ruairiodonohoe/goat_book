@@ -1,6 +1,7 @@
 """Testing lists app."""
 
 from typing import TYPE_CHECKING
+from unittest import skip
 
 import lxml.html
 from django.test import TestCase
@@ -156,3 +157,16 @@ class ListViewTest(TestCase):
         """Test for invalid input shows error on page."""
         response = self.post_invalid_input()
         self.assertContains(response, html.escape(EMPTY_ITEM_ERROR))
+
+    @skip("Skip for now")
+    def test_duplicate_item_validation_errors_end_up_on_lists_page(self) -> None:
+        """Test dplicate item validation errors end up on lists page."""
+        list1 = List.objects.create()
+        Item.objects.create(list=list1, text="textey")
+
+        response = self.client.post(f"/lists/{list1.id}", data={"text": "textey"})
+
+        expected_error = html.escape("You've already got this in your list")
+        self.assertContains(response, expected_error)
+        self.assertTemplateUsed(response, "list.html")
+        self.assertEqual(Item.objects.all().count(), 1)

@@ -7,6 +7,7 @@ from django import forms
 from lists.models import Item, List
 
 EMPTY_ITEM_ERROR = "You can't have an empty list item"
+DUPLICATE_ITEM_ERROR = "You've already got this in your list"
 
 
 class ItemForm(forms.models.ModelForm):
@@ -29,9 +30,23 @@ class ItemForm(forms.models.ModelForm):
         self.instance.list = for_list
         return super().save(*args, **kwargs)
 
-    # item_text = forms.CharField( #noqa: ERA001
-    #     widget=forms.widgets.TextInput( #noqa: ERA001
-    #         attrs={"placeholder": "Enter a to-do item", "class":
-    #  "form-control form-control-lg"}
-    #     ) #noqa: ERA001
-    # ) #noqa: ERA001
+
+class ExistingListItemForm(forms.models.ModelForm):
+    """Existing List Item Form."""
+
+    def __init__(self, for_list: List, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.instance.list = for_list
+
+    def clean_text(self) -> str:
+        """Clean text."""
+        text = self.cleaned_data["text"]
+        if self.instance.list.item_set.filter(text=text).exists():
+            raise forms.ValidationError(DUPLICATE_ITEM_ERROR)
+        return text
+
+    class Meta(ItemForm.Meta):
+        """Meta options for ExistingListItemForm."""
+
+        model = Item
+        fields = ("text",)
