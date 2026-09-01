@@ -12,6 +12,7 @@ requires-python = ">=3.14,<4.0"
 dependencies = [
   "ansible>=14.3.1",
   "django<7",
+  "django-stubs-ext>=6.1.0",
   "docker>=7.2.0",
   "dotenv>=0.9.9",
   "gunicorn>=26.2.0",
@@ -35,6 +36,7 @@ dev = [
   "codespell (>=2.4.3)",
   "coverage[toml] (>=7.15.4)",
   "django-stubs>=6.1.0",
+  "django-stubs-ext>=6.1.0",
   "ipykernel (>=7.3.0)",
   "ipython (>=9.16.1)",
   "ipywidgets (>=8.1.8)",

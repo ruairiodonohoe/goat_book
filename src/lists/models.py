@@ -26,6 +26,11 @@ class Item(models.Model):
     text = models.TextField(default="")
     list = models.ForeignKey(List, default=None, on_delete=models.CASCADE)
 
+    class Meta:
+        """Class meta of Item."""
+
+        unique_together = ("list", "text")
+
     def __str__(self) -> str:
         """Return string representation of the item."""
         return str(self.text)
