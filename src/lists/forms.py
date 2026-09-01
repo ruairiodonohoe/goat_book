@@ -31,7 +31,7 @@ class ItemForm(forms.models.ModelForm):
         return super().save(*args, **kwargs)
 
 
-class ExistingListItemForm(forms.models.ModelForm):
+class ExistingListItemForm(ItemForm):
     """Existing List Item Form."""
 
     def __init__(self, for_list: List, *args: Any, **kwargs: Any) -> None:
@@ -45,8 +45,7 @@ class ExistingListItemForm(forms.models.ModelForm):
             raise forms.ValidationError(DUPLICATE_ITEM_ERROR)
         return text
 
-    class Meta(ItemForm.Meta):
-        """Meta options for ExistingListItemForm."""
-
-        model = Item
-        fields = ("text",)
+    def save(self, commit: bool = True) -> Item:  # noqa: FBT001, FBT002
+        """Save."""
+        instance: Item = forms.models.ModelForm.save(self, commit=commit)  # ty: ignore[invalid-assignment]
+        return instance
