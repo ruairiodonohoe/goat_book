@@ -157,6 +157,13 @@ class ListViewTest(TestCase):
         response = self.post_invalid_input()
         self.assertContains(response, html.escape(EMPTY_ITEM_ERROR))
 
+    def test_for_invalid_input_sets_is_invalid_class(self) -> None:
+        """Test for invali input setsis invliad class."""
+        response = self.post_invalid_input()
+        parsed = lxml.html.fromstring(response.content)
+        [input_] = parsed.cssselect("input[name=text]")
+        self.assertIn("is-invalid", set(input_.classes))
+
     def test_duplicate_item_validation_errors_end_up_on_lists_page(self) -> None:
         """Test duplicate item validation errors end up on lists page."""
         list1 = List.objects.create()

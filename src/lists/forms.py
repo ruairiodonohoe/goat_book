@@ -1,6 +1,6 @@
 """Forms."""
 
-from typing import Any, ClassVar
+from typing import Any
 
 from django import forms
 
@@ -10,32 +10,14 @@ EMPTY_ITEM_ERROR = "You can't have an empty list item"
 DUPLICATE_ITEM_ERROR = "You've already got this in your list"
 
 
-class ItemForm(forms.models.ModelForm):
+class ItemForm(forms.Form):
     """Item Forms."""
 
-    class Meta:
-        """Meta for ItemForm."""
+    text = forms.CharField(error_messages={"required": EMPTY_ITEM_ERROR}, required=True)
 
-        model = Item
-        fields = ("text",)
-        widgets: ClassVar[dict] = {
-            "text": forms.widgets.TextInput(
-                attrs={"placeholder": "Enter a to-do item", "class": "form-control form-control-lg"}
-            )
-        }
-        error_messages: ClassVar[dict] = {"text": {"required": EMPTY_ITEM_ERROR}}
-
-    def is_valid(self) -> bool:
-        """Help function is_valid."""
-        result = super().is_valid()
-        if not result:
-            self.fields["text"].widget.attrs["class"] += " is-invalid"
-        return result
-
-    def save(self, for_list: List, *args: Any, **kwargs: Any) -> Item:
+    def save(self, for_list: List) -> Item:
         """Save Item to List."""
-        self.instance.list = for_list
-        return super().save(*args, **kwargs)
+        return Item.objects.create(list=for_list, text=self.cleaned_data["text"])
 
 
 class ExistingListItemForm(ItemForm):
@@ -43,16 +25,16 @@ class ExistingListItemForm(ItemForm):
 
     def __init__(self, for_list: List, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.instance.list = for_list
+        self._for_list = for_list
 
     def clean_text(self) -> str:
         """Clean text."""
         text = self.cleaned_data["text"]
-        if self.instance.list.item_set.filter(text=text).exists():
+        if Item.objects.filter(list=self._for_list, text=text).exists():
             raise forms.ValidationError(DUPLICATE_ITEM_ERROR)
         return text
 
-    def save(self, commit: bool = True) -> Item:  # noqa: FBT001, FBT002
+    def save(self, for_list: List | None = None) -> Item:
         """Save."""
-        instance: Item = forms.models.ModelForm.save(self, commit=commit)  # ty: ignore[invalid-assignment]
-        return instance
+        target_list = for_list if for_list is not None else self._for_list
+        return Item.objects.create(list=target_list, text=self.cleaned_data["text"])
