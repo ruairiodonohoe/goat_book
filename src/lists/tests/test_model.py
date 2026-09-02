@@ -54,6 +54,11 @@ class ItemModelTest(TestCase):
         item = Item(list=list2, text="bla")
         item.full_clean()
 
+    def test_string_representation(self) -> None:
+        """Test string representation."""
+        item = Item(text="some text")
+        self.assertEqual(str(item), "some text")
+
 
 class ListModelTest(TestCase):
     """List Model Test."""
@@ -62,3 +67,11 @@ class ListModelTest(TestCase):
         """Test get_absolute_url."""
         mylist = List.objects.create()
         self.assertEqual(mylist.get_absolute_url(), f"/lists/{mylist.id}/")
+
+    def test_list_items_order(self) -> None:
+        """Test list items order."""
+        list1 = List.objects.create()
+        item1 = Item.objects.create(list=list1, text="i1")
+        item2 = Item.objects.create(list=list1, text="item2")
+        item3 = Item.objects.create(list=list1, text="3")
+        self.assertEqual(list(list1.item_set.all()), [item1, item2, item3])  # type: ignore[ty:unresolved-attribute]
