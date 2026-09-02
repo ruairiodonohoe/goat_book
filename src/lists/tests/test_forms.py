@@ -22,6 +22,13 @@ class ItemFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["text"], [EMPTY_ITEM_ERROR])
 
+    def test_invalid_form_has_bootsrap_is_invalid_css_class(self) -> None:
+        """Test invliad form has bootstrap is_invalid css class."""
+        form = ItemForm(data={"text": ""})
+        self.assertFalse(form.is_valid())
+        field = form.fields["text"]
+        self.assertEqual(field.widget.attrs["class"], "form-control form-control-lg is-invalid")
+
     def test_form_save_handles_saving_to_a_list(self) -> None:
         """Test form save handles saving to a list."""
         mylist = List.objects.create()

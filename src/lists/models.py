@@ -29,6 +29,7 @@ class Item(models.Model):
     class Meta:
         """Class meta of Item."""
 
+        ordering = ("id",)
         unique_together = ("list", "text")
 
     def __str__(self) -> str:
