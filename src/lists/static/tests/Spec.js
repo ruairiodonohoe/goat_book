@@ -45,13 +45,13 @@ describe("Superlists JavaScript", () => {
   it("should hide error message on input", () => {
     console.log("in test 2");
 
-    initialize(inputSelector, errorSelector);
+    initialize(inputSelector);
     textInput.dispatchEvent(new InputEvent("input"));
     expect(errorMsg.checkVisibility()).toBe(false);
   });
 
   it("should not hide error message before event is fired", () => {
-    initialize(inputSelector, errorSelector);
+    initialize(inputSelector);
     expect(errorMsg.checkVisibility()).toBe(true);
   });
 
