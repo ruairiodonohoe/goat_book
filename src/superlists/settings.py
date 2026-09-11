@@ -135,5 +135,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 
-AUTH_USER_MODEL = "accounts.ListUser"
-AUTHENTICATION_BACKENDS = ["accounts.authentication.PasswordlessAuthenticationBackend"]
+AUTH_USER_MODEL = "accounts.User"
+# AUTHENTICATION_BACKENDS #noqa: ERA001
+# = ["accounts.authentication.PasswordlessAuthenticationBackend"]
