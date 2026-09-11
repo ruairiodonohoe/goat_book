@@ -25,8 +25,9 @@ class HomePageTest(TestCase):
         """Test rendered input form of home page."""
         response = self.client.get("/")
         parsed = lxml.html.fromstring(response.content)
-        [form] = parsed.cssselect("form[method=post]")
-        self.assertEqual(form.get("action").strip(), "/lists/new")
+        forms = parsed.cssselect("form[method=post]")
+        self.assertIn("/list/new", [form.get("action") for form in forms])
+        [form] = [form for form in forms if form.get("action") == "/lists/new"]
         text_inputs = form.cssselect("input")
         self.assertIn("text", [text_input.get("name") for text_input in text_inputs])
 
@@ -90,10 +91,12 @@ class ListViewTest(TestCase):
     def test_renders_input_form(self) -> None:
         """Test rendered input form of home page."""
         mylist = List.objects.create()
-        response = self.client.get(f"/lists/{mylist.id}/")
+        url = f"/lists/{mylist.id}"
+        response = self.client.get(url)
         parsed = lxml.html.fromstring(response.content)
-        [form] = parsed.cssselect("form[method=post]")
-        self.assertEqual(form.get("action").strip(), f"/lists/{mylist.id}/")
+        forms = parsed.cssselect("form[method=post]")
+        self.assertIn(url, [form.get("action") for form in forms])
+        [form] = [form for form in forms if form.get("action") == url]
         text_inputs = form.cssselect("input")
         self.assertIn("text", [text_input.get("name") for text_input in text_inputs])
 
