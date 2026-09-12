@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
+from accounts.models import User
 from lists.models import Item, List
 
 
@@ -75,3 +76,13 @@ class ListModelTest(TestCase):
         item2 = Item.objects.create(list=list1, text="item2")
         item3 = Item.objects.create(list=list1, text="3")
         self.assertEqual(list(list1.item_set.all()), [item1, item2, item3])  # type: ignore[ty:unresolved-attribute]
+
+    def test_lists_can_have_owners(self) -> None:
+        """Test lists can have owners."""
+        user = User.objects.create(email="a@b.com")
+        mylist = List.objects.create(owner=user)
+        self.assertIn(mylist, user.lists.all())  # type: ignore  # noqa: PGH003
+
+    def test_owner_is_optional(self) -> None:
+        """Test owner is optional."""
+        List.objects.create()  # should not raise

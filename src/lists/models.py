@@ -9,6 +9,10 @@ from django.urls import reverse
 class List(models.Model):
     """List model."""
 
+    owner = models.ForeignKey(
+        "accounts.User", related_name="lists", blank=True, null=True, on_delete=models.CASCADE
+    )
+
     id: models.AutoField[int, int]
 
     def __str__(self) -> str:
