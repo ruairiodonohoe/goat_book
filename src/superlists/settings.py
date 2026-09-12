@@ -136,5 +136,4 @@ EMAIL_USE_TLS = True
 
 
 AUTH_USER_MODEL = "accounts.User"
-# AUTHENTICATION_BACKENDS #noqa: ERA001
-# = ["accounts.authentication.PasswordlessAuthenticationBackend"]
+AUTHENTICATION_BACKENDS = ["accounts.authentication.PasswordlessAuthenticationBackend"]
