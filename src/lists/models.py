@@ -23,6 +23,11 @@ class List(models.Model):
         """Get absolute url."""
         return reverse("view_list", args=[self.id])
 
+    @property
+    def name(self) -> None:
+        """Name property."""
+        return self.item_set.first().text  # type: ignore  # noqa: PGH003
+
 
 class Item(models.Model):
     """To-Do Item model."""

@@ -86,3 +86,10 @@ class ListModelTest(TestCase):
     def test_owner_is_optional(self) -> None:
         """Test owner is optional."""
         List.objects.create()  # should not raise
+
+    def test_list_name_is_first_item_text(self) -> None:
+        """Test list name is first item text."""
+        list_ = List.objects.create()
+        Item.objects.create(list=list_, text="first item")
+        Item.objects.create(list=list_, text="second item")
+        self.assertEqual(list_.name, "first item")

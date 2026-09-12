@@ -20,25 +20,25 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 23
 
       - name: Install @devcontainers/cli
         run: npm install --location=global @devcontainers/cli@0.76.0
 
-      # - name: Start Dev Container
-      #   run: |
-      #     git config --global init.defaultBranch main
-      #     devcontainer up --workspace-folder .
-      #   env:
-      #     PYTHON_VERSION: ${{ matrix.python-version }}
+      - name: Start Dev Container
+        run: |
+          git config --global init.defaultBranch main
+          devcontainer up --workspace-folder .
+        env:
+          PYTHON_VERSION: ${{ matrix.python-version }}
 
-      #- name: Lint app
-      #  run: devcontainer exec --workspace-folder . poe lint
+      - name: Lint app
+        run: devcontainer exec --workspace-folder . poe lint
 
-      # - name: Test app
-      #   run: devcontainer exec --workspace-folder . poe test
+      - name: Test app
+        run: devcontainer exec --workspace-folder . poe test

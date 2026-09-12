@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block header_text %}
-    {{ user.email }}
+    <span class="d-inline-block text-break fs-1">{{ user.email }}'s Lists</span>
 {% endblock %}
 {% block content %}
     <h2>{{ owner.email }}'s lists</h2>
