@@ -23,9 +23,10 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 
 COPY src /src
+COPY functional_tests /functional_tests
 COPY manage.py .
 
-ENV PYTHONPATH="/src"
+ENV PYTHONPATH="/src:."
 
 RUN uv run python manage.py collectstatic
 

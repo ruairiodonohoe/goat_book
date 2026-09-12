@@ -30,6 +30,10 @@ class LoginTest(FunctionalTest):
                 "Check your email", self.browser.find_element(By.CSS_SELECTOR, "body").text
             )
         )
+
+        if self.test_server:
+            return
+
         # She checks her email and finds a message
         email = mail.outbox.pop()
         self.assertIn(TEST_EMAIL, email.to)

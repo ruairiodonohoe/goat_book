@@ -9,6 +9,8 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 
+from functional_tests.container_commands import reset_database
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
@@ -36,16 +38,13 @@ def wait(fn: Callable) -> Callable:
 class FunctionalTest(StaticLiveServerTestCase):
     """Functional Test Class."""
 
-    @property
-    def live_server_url(self) -> str:
-        """Return TEST_SERVER env var if set, otherwise fallback to Django's live server."""
-        if test_server := os.environ.get("TEST_SERVER"):
-            return "http://" + test_server
-        return super().live_server_url
-
     def setUp(self) -> None:
         """Set up test."""
         self.browser = webdriver.Firefox()
+        self.test_server = os.environ.get("TEST_SERVER")
+        if self.test_server:
+            self.test_server_url = "http://" + self.test_server
+            reset_database(self.test_server)
 
     def tearDown(self) -> None:
         """Test down test."""
