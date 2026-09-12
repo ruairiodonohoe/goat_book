@@ -60,6 +60,7 @@ class FunctionalTest(StaticLiveServerTestCase):
         """Wait for function to complete."""
         return fn()
 
+    # Test
     @wait
     def wait_for_row_in_list_table(self, row_text: str) -> None:
         """Check for row in list table."""
