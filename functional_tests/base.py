@@ -2,6 +2,7 @@
 
 import os
 import time
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -17,8 +18,10 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from selenium.webdriver.remote.webelement import WebElement
+from pathlib import Path
 
 MAX_WAIT = 5
+SCREEN_DUMP_LOCATION = Path(__file__).absolute().parent / "screendumps"
 
 
 def wait(fn: Callable) -> Callable:
@@ -52,7 +55,30 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def tearDown(self) -> None:
         """Test down test."""
+        if self._test_has_failed():  # type: ignore  # noqa: PGH003
+            if not SCREEN_DUMP_LOCATION.exists():
+                SCREEN_DUMP_LOCATION.mkdir(parents=True)
+            self.take_screenshot()
+            self.dump_html()
         self.browser.quit()
+        super().tearDown()
+
+    def take_screenshot(self) -> None:
+        """Take screenshot."""
+        path = SCREEN_DUMP_LOCATION / self._get_filename("png")
+        print("screenshotting to", path)  # noqa : T201
+        self.browser.get_screenshot_as_file(str(path))
+
+    def dump_html(self) -> None:
+        """Dump html."""
+        path = SCREEN_DUMP_LOCATION / self._get_filename("html")
+        print("dumping page HTML to", path)  # noqa : T201
+        path.write_text(self.browser.page_source)
+
+    def _get_filename(self, extension: str) -> str:
+        """Get filename."""
+        timestamp = datetime.now(UTC).isoformat().replace(":", ".")[:19]
+        return f"{self.__class__.__name__}.{self._testMethodName}-{timestamp}.{extension}"
 
     def get_item_input_box(self) -> WebElement:
         """Get item input box."""

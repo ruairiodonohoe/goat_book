@@ -42,3 +42,11 @@ jobs:
 
       - name: Test app
         run: devcontainer exec --workspace-folder . poe test
+
+      - name: Upload screendumps on failure
+        uses: actions/upload-artifact@v4
+        if: always() # Ensures screenshots are uploaded even if tests fail
+        with:
+          name: functional-test-screendumps
+          path: src/functional_tests/screendumps/
+          retention-days: 30
