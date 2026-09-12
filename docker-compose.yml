@@ -3,6 +3,7 @@ services:
   devcontainer:
     build:
       target: dev
+    image: goat_book-devcontainer
     volumes:
       - ..:/workspaces
       - command-history-volume:/home/user/.history/
