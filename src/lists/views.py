@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
+from accounts.models import User
 from lists.forms import ExistingListItemForm, ItemForm
 from lists.models import List
 
@@ -40,12 +41,15 @@ def new_list(request: HttpRequest) -> HttpResponse:
     form = ItemForm(data=request.POST)
     if form.is_valid():
         nulist = List.objects.create()
+        if request.user.is_authenticated:
+            nulist.owner = request.user
+            nulist.save()
         form.save(for_list=nulist)
         return redirect(nulist)
-
     return render(request, "home.html", {"form": form})
 
 
 def my_lists(request: HttpRequest, email: str) -> HttpResponse:
     """My list view."""
-    return render(request, "my_lists.html")
+    owner = User.objects.get(email=email)
+    return render(request, "my_lists.html", {"owner": owner})
