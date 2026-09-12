@@ -3,7 +3,7 @@
 from django.contrib import auth
 from django.test import TestCase
 
-from accounts.models import User
+from accounts.models import Token, User
 
 
 class UserModelTest(TestCase):
@@ -22,3 +22,13 @@ class UserModelTest(TestCase):
         """Test email is primary key."""
         user = User(email="a@b.com")
         self.assertEqual(user.pk, "a@b.com")
+
+
+class TokenModelTest(TestCase):
+    """TokenModelTest Class."""
+
+    def test_links_user_with_auto_generated_uid(self) -> None:
+        """Test links user with auto generated uid."""
+        token1 = Token.objects.create(email="a@b.com")
+        token2 = Token.objects.create(email="a@b.com")
+        self.assertNotEqual(token1.uid, token2.uid)

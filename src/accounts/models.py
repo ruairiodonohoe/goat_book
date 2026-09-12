@@ -1,5 +1,7 @@
 """Accounts models."""
 
+import uuid
+
 from django.db import models
 
 
@@ -17,3 +19,14 @@ class User(models.Model):
     def __str__(self) -> str:
         """Str representation."""
         return self.email
+
+
+class Token(models.Model):
+    """Token class."""
+
+    email = models.EmailField()
+    uid = models.CharField(default=uuid.uuid4, max_length=40)
+
+    def __str__(self) -> str:
+        """Print string representation."""
+        return ""
