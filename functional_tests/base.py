@@ -65,7 +65,10 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def _test_has_failed(self) -> bool:
         # slightly obscure but couldn't find a better way!
-        return self._outcome.result.failures or self._outcome.result.errors  # type: ignore  # noqa: PGH003
+        try:
+            return bool(self._outcome.result.failures or self._outcome.result.errors)  # type: ignore  # noqa: PGH003
+        except AttributeError:
+            return False
 
     def take_screenshot(self) -> None:
         """Take screenshot."""
