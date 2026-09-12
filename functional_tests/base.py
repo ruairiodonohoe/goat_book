@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options
 
 from functional_tests.container_commands import reset_database
 
@@ -41,7 +42,9 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def setUp(self) -> None:
         """Set up test."""
-        self.browser = webdriver.Firefox()
+        options = Options()
+        options.add_argument("--headless")
+        self.browser = webdriver.Firefox(options=options)
         self.test_server = os.environ.get("TEST_SERVER")
         if self.test_server:
             self.test_server_url = "http://" + self.test_server
