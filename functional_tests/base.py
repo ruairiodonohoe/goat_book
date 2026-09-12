@@ -64,8 +64,8 @@ class FunctionalTest(StaticLiveServerTestCase):
         super().tearDown()
 
     def _test_has_failed(self) -> bool:
-        # Inspects unittest's internal test outcome results
-        return any(error for (method, error) in self._outcome.errors)  # type: ignore  # noqa: PGH003
+        # slightly obscure but couldn't find a better way!
+        return self._outcome.result.failures or self._outcome.result.errors  # type: ignore  # noqa: PGH003
 
     def take_screenshot(self) -> None:
         """Take screenshot."""
