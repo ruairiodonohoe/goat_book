@@ -181,7 +181,8 @@ options = ["--serve"]
 help = "Serve the app"
 
 [[tool.poe.tasks.serve.sequence]]
-cmd = "echo 'Serving app (placeholder)...'"
+#cmd = "echo 'Serving app (placeholder)...'"
+cmd = "gunicorn --bind :8888 superlists.wsgi:application"
 
 [tool.poe.tasks.lint]
 help = "Lint this app"
@@ -200,7 +201,10 @@ cmd = """
 help = "Test this app"
 
 [[tool.poe.tasks.test.sequence]]
-cmd = "coverage run"
+cmd = "coverage run --module pytest src"
+
+[[tool.poe.tasks.test.sequence]]
+cmd = "coverage run --append --module pytest functional_tests"
 
 [[tool.poe.tasks.test.sequence]]
 cmd = "coverage report"

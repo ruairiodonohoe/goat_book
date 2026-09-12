@@ -1,39 +1,96 @@
-FROM python:3.14-slim
+# syntax=docker/dockerfile:1
+FROM ghcr.io/astral-sh/uv:python3.14-trixie AS dev
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
-RUN sh /uv-installer.sh && rm /uv-installer.sh
+# Create and activate a virtual environment [1].
+# [1] https://docs.astral.sh/uv/concepts/projects/config/#project-environment-path
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH=$VIRTUAL_ENV/bin:$PATH
+ENV UV_PROJECT_ENVIRONMENT=$VIRTUAL_ENV
 
-ENV PATH="/root/.local/bin:$PATH"
+# Tell Git that the workspace is safe to avoid 'detected dubious ownership in repository' warnings.
+RUN git config --system --add safe.directory '*'
 
-#COPY --from=uv /uv /uvx /bin/
+# Create a non-root user and give it passwordless sudo access [1].
+# [1] https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
+RUN --mount=type=cache,target=/var/cache/apt/ \
+    --mount=type=cache,target=/var/lib/apt/ \
+    groupadd --gid 1000 user && \
+    useradd --create-home --no-log-init --gid 1000 --uid 1000 --shell /usr/bin/bash user && \
+    chown user:user /opt/ && \
+    apt-get update && apt-get install --no-install-recommends --yes sudo && \
+    echo 'user ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/user && chmod 0440 /etc/sudoers.d/user
+USER user
 
+# Configure the non-root user's shell.
+RUN mkdir ~/.history/ && \
+    echo 'HISTFILE=~/.history/.bash_history' >> ~/.bashrc && \
+    echo 'bind "\"\e[A\": history-search-backward"' >> ~/.bashrc && \
+    echo 'bind "\"\e[B\": history-search-forward"' >> ~/.bashrc && \
+    echo 'eval "$(starship init bash)"' >> ~/.bashrc
+
+
+
+FROM python:3.14-slim AS app
+
+# Configure Python to print tracebacks on crash [1], and to not buffer stdout and stderr [2].
+# [1] https://docs.python.org/3/using/cmdline.html#envvar-PYTHONFAULTHANDLER
+# [2] https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUNBUFFERED
+ENV PYTHONFAULTHANDLER=1
+ENV PYTHONUNBUFFERED=1
+
+# Remove docker-clean so we can manage the apt cache with the Docker build cache.
+RUN rm /etc/apt/apt.conf.d/docker-clean
+
+# Install compilers that may be required for certain packages or platforms.
+RUN --mount=type=cache,target=/var/cache/apt/ \
+    --mount=type=cache,target=/var/lib/apt/ \
+    apt-get update && \
+    apt-get install --no-install-recommends --yes build-essential curl ca-certificates
+
+# Create a non-root user and switch to it [1].
+# [1] https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
+RUN groupadd --gid 1000 user && \
+    useradd --create-home --no-log-init --gid 1000 --uid 1000 user
+RUN mkdir /venv && chown user:user /venv
+USER user
+
+
+# Set uv environment variables and PATH
 ENV UV_PROJECT_ENVIRONMENT="/venv"
-ENV PATH="/venv/bin:$PATH"
 ENV UV_COMPILE_BYTECODE=1
+ENV PATH="/venv/bin:$PATH"
 
-COPY pyproject.toml uv.lock ./
+# Download and run the uv installer using curl (bypasses 403 blocks)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-RUN uv sync --frozen --no-dev --no-install-project
+# Add user local bin to PATH
+ENV PATH="/home/user/.local/bin:$PATH"
 
-# RUN python -m venv /venv
-# ENV PATH="/venv/bin:$PATH"
+# Set the working directory.
+WORKDIR /workspaces/goat_book/
 
-# RUN pip install "django<6" python-dotenv gunicorn whitenoise
+# Copy the app source code to the working directory.
+COPY --chown=user:user . .
 
+# Install the application and its dependencies [1].
+# [1] https://docs.astral.sh/uv/guides/integration/docker/#optimizations
+RUN --mount=type=cache,uid=1000,gid=1000,target=/home/user/.cache/uv \
+   # --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
+    uv sync \
+    --all-extras \
+    --compile-bytecode \
+    --frozen \
+    --link-mode copy \
+    --no-dev \
+    --no-editable \
+    --python-preference only-system
 
-COPY src /src
-COPY functional_tests /functional_tests
-COPY manage.py .
+ENV PYTHONPATH="/workspaces/goat_book/src"
 
-ENV PYTHONPATH="/src:."
-
-RUN uv run python manage.py collectstatic
+RUN mkdir -p staticfiles
+RUN uv run python manage.py collectstatic --noinput
 
 ENV DJANGO_DEBUG_FALSE=1
-
-RUN adduser --uid 1234 nonroot
-USER nonroot
-
-
-CMD ["gunicorn", "--bind", ":8888", "superlists.wsgi:application"]
+# Expose the app.
+ENTRYPOINT ["poe"]
+CMD ["serve"]
