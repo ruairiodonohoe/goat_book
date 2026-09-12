@@ -181,7 +181,8 @@ options = ["--serve"]
 help = "Serve the app"
 
 [[tool.poe.tasks.serve.sequence]]
-cmd = "echo 'Serving app (placeholder)...'"
+#cmd = "echo 'Serving app (placeholder)...'"
+cmd = "gunicorn --bind :8888 superlists.wsgi:application"
 
 [tool.poe.tasks.lint]
 help = "Lint this app"

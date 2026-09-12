@@ -28,6 +28,8 @@ RUN mkdir ~/.history/ && \
     echo 'bind "\"\e[B\": history-search-forward"' >> ~/.bashrc && \
     echo 'eval "$(starship init bash)"' >> ~/.bashrc
 
+
+
 FROM python:3.14-slim AS app
 
 # Configure Python to print tracebacks on crash [1], and to not buffer stdout and stderr [2].
@@ -43,13 +45,26 @@ RUN rm /etc/apt/apt.conf.d/docker-clean
 RUN --mount=type=cache,target=/var/cache/apt/ \
     --mount=type=cache,target=/var/lib/apt/ \
     apt-get update && \
-    apt-get install --no-install-recommends --yes build-essential
+    apt-get install --no-install-recommends --yes build-essential curl ca-certificates
 
 # Create a non-root user and switch to it [1].
 # [1] https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
 RUN groupadd --gid 1000 user && \
     useradd --create-home --no-log-init --gid 1000 --uid 1000 user
+RUN mkdir /venv && chown user:user /venv
 USER user
+
+
+# Set uv environment variables and PATH
+ENV UV_PROJECT_ENVIRONMENT="/venv"
+ENV UV_COMPILE_BYTECODE=1
+ENV PATH="/venv/bin:$PATH"
+
+# Download and run the uv installer using curl (bypasses 403 blocks)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Add user local bin to PATH
+ENV PATH="/home/user/.local/bin:$PATH"
 
 # Set the working directory.
 WORKDIR /workspaces/goat_book/
@@ -60,7 +75,7 @@ COPY --chown=user:user . .
 # Install the application and its dependencies [1].
 # [1] https://docs.astral.sh/uv/guides/integration/docker/#optimizations
 RUN --mount=type=cache,uid=1000,gid=1000,target=/home/user/.cache/uv \
-    --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
+   # --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
     uv sync \
     --all-extras \
     --compile-bytecode \
@@ -70,6 +85,8 @@ RUN --mount=type=cache,uid=1000,gid=1000,target=/home/user/.cache/uv \
     --no-editable \
     --python-preference only-system
 
+ENV PYTHONPATH="/workspaces/goat_book/src"
+
 # Expose the app.
-ENTRYPOINT ["/workspaces/goat_book/.venv/bin/poe"]
+ENTRYPOINT ["poe"]
 CMD ["serve"]
