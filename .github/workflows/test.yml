@@ -43,6 +43,13 @@ jobs:
       - name: Test app
         run: devcontainer exec --workspace-folder . poe test
 
+
+      - name: Install JS dependencies
+        run: devcontainer exec --workspace-folder . npm ci --prefix src/lists/static
+
+      - name: Run JavaScript (Jasmine) tests
+        run: devcontainer exec --workspace-folder . bash -c "cd src/lists/static && npx jasmine-browser-runner runSpecs --config=tests/jasmine-browser-runner.config.mjs"
+      
       - name: Upload screendumps on failure
         uses: actions/upload-artifact@v4
         if: always() # Ensures screenshots are uploaded even if tests fail
