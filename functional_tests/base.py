@@ -55,13 +55,17 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def tearDown(self) -> None:
         """Test down test."""
-        if self._test_has_failed():  # type: ignore  # noqa: PGH003
+        if self._test_has_failed():
             if not SCREEN_DUMP_LOCATION.exists():
                 SCREEN_DUMP_LOCATION.mkdir(parents=True)
             self.take_screenshot()
             self.dump_html()
         self.browser.quit()
         super().tearDown()
+
+    def _test_has_failed(self) -> bool:
+        # Inspects unittest's internal test outcome results
+        return any(error for (method, error) in self._outcome.errors)  # type: ignore  # noqa: PGH003
 
     def take_screenshot(self) -> None:
         """Take screenshot."""
