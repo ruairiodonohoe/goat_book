@@ -44,3 +44,8 @@ def new_list(request: HttpRequest) -> HttpResponse:
         return redirect(nulist)
 
     return render(request, "home.html", {"form": form})
+
+
+def my_lists(request: HttpRequest, email: str) -> HttpResponse:
+    """My list view."""
+    return render(request, "my_lists.html")
