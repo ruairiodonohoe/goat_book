@@ -26,8 +26,9 @@ class HomePageTest(TestCase):
         response = self.client.get("/")
         parsed = lxml.html.fromstring(response.content)
         forms = parsed.cssselect("form[method=post]")
-        self.assertIn("/list/new", [form.get("action") for form in forms])
-        [form] = [form for form in forms if form.get("action") == "/lists/new"]
+        actions = [form.get("action").strip() for form in forms]
+        self.assertIn("/lists/new", actions)
+        [form] = [form for form in forms if form.get("action", "").strip() == "/lists/new"]
         text_inputs = form.cssselect("input")
         self.assertIn("text", [text_input.get("name") for text_input in text_inputs])
 
@@ -91,12 +92,13 @@ class ListViewTest(TestCase):
     def test_renders_input_form(self) -> None:
         """Test rendered input form of home page."""
         mylist = List.objects.create()
-        url = f"/lists/{mylist.id}"
+        url = f"/lists/{mylist.id}/"
         response = self.client.get(url)
         parsed = lxml.html.fromstring(response.content)
         forms = parsed.cssselect("form[method=post]")
-        self.assertIn(url, [form.get("action") for form in forms])
-        [form] = [form for form in forms if form.get("action") == url]
+        actions = [form.get("action").strip() for form in forms]
+        self.assertIn(url, actions)
+        [form] = [form for form in forms if form.get("action", "").strip() == url]
         text_inputs = form.cssselect("input")
         self.assertIn("text", [text_input.get("name") for text_input in text_inputs])
 
@@ -178,3 +180,12 @@ class ListViewTest(TestCase):
         self.assertContains(response, expected_error)
         self.assertTemplateUsed(response, "list.html")
         self.assertEqual(Item.objects.all().count(), 1)
+
+
+class MyListsTest(TestCase):
+    """MyListTest class."""
+
+    def test_my_lists_url_renders_my_lists_template(self) -> None:
+        """Test my lists url renders my lists template."""
+        response = self.client.get("/lists/users/a@b.com/")
+        self.assertTemplateUsed(response, "my_lists.html")
