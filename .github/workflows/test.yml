@@ -30,6 +30,9 @@ jobs:
       - name: Install @devcontainers/cli
         run: npm install --location=global @devcontainers/cli@0.76.0
 
+      - name: Build Dev Container image locally
+        run: docker compose build devcontainer
+
       - name: Start Dev Container
         run: |
           git config --global init.defaultBranch main
