@@ -86,6 +86,8 @@ RUN --mount=type=cache,uid=1000,gid=1000,target=/home/user/.cache/uv \
     --python-preference only-system
 
 ENV PYTHONPATH="/workspaces/goat_book/src"
+
+RUN mkdir -p staticfiles
 RUN uv run python manage.py collectstatic --noinput
 
 ENV DJANGO_DEBUG_FALSE=1
