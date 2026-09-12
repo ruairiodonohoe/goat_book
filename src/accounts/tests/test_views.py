@@ -1,10 +1,12 @@
 """Test accounts views."""
 
+from unittest import mock
 from unittest.mock import MagicMock, patch
 
+from django.contrib import auth
 from django.test import TestCase
 
-from accounts.models import Token
+from accounts.models import Token, User
 
 
 class SendLoginEmailViewTest(TestCase):
@@ -61,3 +63,29 @@ class LoginViewTest(TestCase):
         """Test redirects to home page."""
         response = self.client.get("/accounts/login?token=abcd123")
         self.assertRedirects(response, "/")
+
+    def test_logs_in_if_given_valid_token(self) -> None:
+        """Test logs in if given valid token."""
+        anon_user = auth.get_user(self.client)
+        self.assertEqual(anon_user.is_authenticated, False)
+        token = Token.objects.create(email="edith@example.com")
+        self.client.get(f"/accounts/login?token={token.uid}")
+        user = auth.get_user(self.client)
+        self.assertEqual(user.is_authenticated, True)
+        assert isinstance(user, User)
+        self.assertEqual(user.email, "edith@example.com")
+
+    def test_shows_login_error_if_token_invalid(self) -> None:
+        """Test shows login error if token invalid."""
+        response = self.client.get("/accounts/login?token=invalid-token", follow=True)
+        user = auth.get_user(self.client)
+        self.assertEqual(user.is_authenticated, False)
+        message = next(iter(response.context["messages"]))
+        self.assertEqual(message.message, "Invalid login link, please request a new one")
+        self.assertEqual(message.tags, "error")
+
+    @patch("accounts.views.auth")
+    def test_calls_django_auth_authenticate(self, mock_auth: MagicMock) -> None:
+        """Test calls authentitate with uid from get request."""
+        self.client.get("/accounts/login?token=abcd123")
+        self.assertEqual(mock_auth.authenticate.call_args, mock.call(uid="abcd123"))

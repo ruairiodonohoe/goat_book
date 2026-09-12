@@ -3,7 +3,7 @@
 # Create your views here.
 from typing import TYPE_CHECKING
 
-from django.contrib import messages
+from django.contrib import auth, messages
 from django.core.mail import send_mail
 from django.urls import reverse
 
@@ -20,13 +20,15 @@ def send_login_email(request: HttpRequest) -> HttpResponse:
     token = Token.objects.create(email=email)
     url = request.build_absolute_uri(reverse("login") + "?token=" + str(token.uid))
     message_body = f"Use this link to log in:\n\n{url}"
-    send_mail(
-        "Your login link for Superlists", message_body, "noreply@superlists", ["edith@example.com"]
-    )
+    send_mail("Your login link for Superlists", message_body, "noreply@superlists", [email])
     messages.success(request, "Check your email, we've sent you a link you can use to log in.")
     return redirect("/")
 
 
 def login(request: HttpRequest) -> HttpResponse:
     """Login."""
+    if user := auth.authenticate(uid=request.GET["token"]):
+        auth.login(request, user)
+    else:
+        messages.error(request, "Invalid login link, please request a new one")
     return redirect("/")
