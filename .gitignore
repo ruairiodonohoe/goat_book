@@ -82,3 +82,5 @@ src/lists/static/bootstrap/css/*.map
 /static
 
 staticfiles/
+
+node_modules/

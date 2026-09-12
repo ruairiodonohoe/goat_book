@@ -4,11 +4,14 @@
     "service": "devcontainer",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/",
     "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+        "ghcr.io/devcontainers/features/docker-in-docker:4.1.0": {
             "moby": false
         },
         "ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
             "packages": "starship firefox-esr wget"
+        },
+        "ghcr.io/devcontainers/features/node:2.1.0": {
+            "version": "lts"
         }
     },
     "overrideCommand": true,
