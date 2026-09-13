@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.remote.webelement import WebElement
 from pathlib import Path
 
-MAX_WAIT = 10
+MAX_WAIT = 5
 SCREEN_DUMP_LOCATION = Path(__file__).absolute().parent / "screendumps"
 
 

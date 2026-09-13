@@ -53,3 +53,10 @@ def my_lists(request: HttpRequest, email: str) -> HttpResponse:
     """My list view."""
     owner = User.objects.get(email=email)
     return render(request, "my_lists.html", {"owner": owner})
+
+
+def share_list(request: HttpRequest, list_id: int) -> HttpResponse:
+    """Share list."""
+    our_list = List.objects.get(id=list_id)
+    our_list.shared_with.add(request.POST["sharee"])
+    return redirect(our_list)

@@ -206,3 +206,21 @@ class MyListsTest(TestCase):
         self.client.post("/lists/new", data={"text": "new item"})
         new_list = List.objects.get()
         self.assertEqual(new_list.owner, user)
+
+
+class ShareListTest(TestCase):
+    """ShareListTest class."""
+
+    def test_sharing_a_list_via_post(self) -> None:
+        """Test sharing a list via post."""
+        sharee = User.objects.create(email="share.with@me.com")
+        mylist = List.objects.create()
+        self.client.post(f"/lists/{mylist.id}/share", {"sharee": "share.with@me.com"})
+        self.assertIn(sharee, mylist.shared_with.all())
+
+    def test_redirects_after_post(self) -> None:
+        """Test redirects after post."""
+        sharee = User.objects.create(email="share.with@me.com")  # noqa: F841
+        mylist = List.objects.create()
+        response = self.client.post(f"/lists/{mylist.id}/share", {"sharee": "share.with@me.com"})
+        self.assertRedirects(response, mylist.get_absolute_url())
