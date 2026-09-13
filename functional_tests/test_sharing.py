@@ -4,6 +4,7 @@ import contextlib
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 
 from functional_tests.base import FunctionalTest
 from functional_tests.list_page import ListPage
@@ -26,7 +27,9 @@ class SharingTest(FunctionalTest):
         edith_browser = self.browser
         self.addCleanup(lambda: quit_if_possible(edith_browser))
         # Her friend Onesiphorus is also hanging out on the lists site
-        oni_browser = webdriver.Firefox()
+        options = Options()
+        options.add_argument("--headless")
+        oni_browser = webdriver.Firefox(options=options)
         self.addCleanup(lambda: quit_if_possible(oni_browser))
         self.browser = oni_browser
         self.create_pre_authenticated_session("onesiphorus@example.com")
