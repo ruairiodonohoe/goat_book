@@ -5,16 +5,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('lists', '0007_list_owner'),
+        ("lists", "0007_list_owner"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='list',
-            name='shared_with',
-            field=models.ManyToManyField(related_name='shared_lists', to=settings.AUTH_USER_MODEL),
-        ),
+            model_name="list",
+            name="shared_with",
+            field=models.ManyToManyField(related_name="shared_lists", to=settings.AUTH_USER_MODEL),
+        )
     ]
