@@ -1,0 +1,62 @@
+"""ListPage test module."""
+
+from typing import TYPE_CHECKING
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+if TYPE_CHECKING:
+    from selenium.webdriver.remote.webelement import WebElement
+
+from functional_tests.base import FunctionalTest, wait
+
+
+class ListPage:
+    """ListPage class."""
+
+    def __init__(self, test: FunctionalTest) -> None:
+        """Init."""
+        self.test = test
+
+    def get_table_rows(self) -> list[WebElement]:
+        """Get table rows."""
+        return self.test.browser.find_elements(By.CSS_SELECTOR, "#id_list_table tr")
+
+    @wait
+    def wait_for_row_in_list_table(self, item_text: str, item_number: int) -> None:
+        """Wait for row in list table."""
+        expected_row_text = f"{item_number}: {item_text}"
+        rows = self.get_table_rows()
+        self.test.assertIn(expected_row_text, [row.text for row in rows])
+
+    def get_item_input_box(self) -> WebElement:
+        """Get item input box."""
+        return self.test.browser.find_element(By.ID, "id_text")
+
+    def add_list_item(self, item_text: str) -> ListPage:
+        """Add list item."""
+        new_item_no = len(self.get_table_rows()) + 1
+        self.get_item_input_box().send_keys(item_text)
+        self.get_item_input_box().send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table(item_text, new_item_no)
+        return self
+
+    def get_share_box(self) -> WebElement:
+        """Get share box."""
+        return self.test.browser.find_element(By.CSS_SELECTOR, 'input[name="sharee"]')
+
+    def get_shared_with_list(self) -> list[WebElement]:
+        """Get shared with list."""
+        return self.test.browser.find_elements(By.CSS_SELECTOR, ".list-sharee")
+
+    def share_list_with(self, email: str) -> None:
+        """Share list with."""
+        self.get_share_box().send_keys(email)
+        self.get_share_box().send_keys(Keys.ENTER)
+        self.test.wait_for(
+            lambda: self.test.assertIn(email, [item.text for item in self.get_shared_with_list()])
+        )
+
+    def get_list_owner(self) -> str:
+        """Get list owner."""
+        return self.test.browser.find_element(By.ID, "id_list_owner").text

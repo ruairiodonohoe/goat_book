@@ -1,5 +1,6 @@
 """List models."""
 
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
@@ -12,6 +13,8 @@ class List(models.Model):
     owner = models.ForeignKey(
         "accounts.User", related_name="lists", blank=True, null=True, on_delete=models.CASCADE
     )
+
+    shared_with = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="shared_lists")
 
     id: models.AutoField[int, int]
 

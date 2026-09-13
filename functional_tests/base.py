@@ -5,6 +5,7 @@ import time
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
+from django.conf import settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -12,7 +13,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 
-from functional_tests.container_commands import reset_database
+from functional_tests.container_commands import create_session_on_server, reset_database
+from functional_tests.management.commands.create_session import create_pre_authenticated_session
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -20,7 +22,7 @@ if TYPE_CHECKING:
     from selenium.webdriver.remote.webelement import WebElement
 from pathlib import Path
 
-MAX_WAIT = 10
+MAX_WAIT = 5
 SCREEN_DUMP_LOCATION = Path(__file__).absolute().parent / "screendumps"
 
 
@@ -134,3 +136,19 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.get_item_input_box().send_keys(Keys.ENTER)
         item_number = num_rows + 1
         self.wait_for_row_in_list_table(f"{item_number}: {item_text}")
+
+    def create_pre_authenticated_session(self, email: str) -> None:
+        """Create pre authenticated session."""
+        if (
+            self.test_server
+            and "localhost" not in self.test_server
+            and "127.0.01" not in self.test_server
+        ):
+            session_key = create_session_on_server(self.test_server, email)
+        else:
+            session_key = create_pre_authenticated_session(email)
+
+        self.browser.get(self.live_server_url + "/404_no_such_url/")
+        self.browser.add_cookie(
+            {"name": settings.SESSION_COOKIE_NAME, "value": session_key, "path": "/"}
+        )
