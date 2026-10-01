@@ -20,10 +20,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 23
 
@@ -51,7 +51,7 @@ jobs:
         run: devcontainer exec --workspace-folder . bash -c "cd src/lists/static && npx jasmine-browser-runner runSpecs --config=tests/jasmine-browser-runner.config.mjs"
       
       - name: Upload screendumps on failure
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always() # Ensures screenshots are uploaded even if tests fail
         with:
           name: functional-test-screendumps
